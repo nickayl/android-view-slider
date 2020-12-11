@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val res = mutableListOf(R.drawable.book1, R.drawable.book2,R.drawable.book3,R.drawable.book1,R.drawable.book2,R.drawable.book3)
-        val resStrings = mutableListOf("Ciao ciao", "Che pollo", "che sei!!!", "eoeoeoeoe", "ooooooooo", "aaaaaaaaa")
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
@@ -34,27 +33,7 @@ class MainActivity : AppCompatActivity() {
             override fun getView(position: Int, parent: SliderView, convertView: View?): View {
                 var view = convertView
                 if(convertView == null) {
-//                    view = LinearLayout(this@TestActivity).apply {
-//                        orientation = LinearLayout.VERTICAL
-//                        layoutParams = FrameLayout.LayoutParams(300, WRAP_CONTENT).apply { gravity = Gravity.CENTER }
-//                        background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_error, null))
-//                        val tv1 = TextView(this@TestActivity).apply {
-//                            text = resStrings[position];
-//                            background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_primary, null))
-//                            setOnClickListener {
-//                                println("$text Clicked222!!!!")
-//                            }
-//                        }
-//                        val tv2 = TextView(this@TestActivity).apply {
-//                            text = resStrings[position];
-//                            background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_secondary, null))
-//                            setOnClickListener {
-//                                println("$text Clicked1111!!!!")
-//                            }
-//                        }
-//                        addView(tv1)
-//                        addView(tv2)
-//                    }
+
                     view = ImageView(this@MainActivity).apply {
                         if(position==3)
                             layoutParams = FrameLayout.LayoutParams(850, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -129,5 +108,30 @@ class MainActivity : AppCompatActivity() {
 //                layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
 //                setImageResource(R.drawable.book3)
 //            })
+//
+  //      val resStrings = mutableListOf("Ciao ciao", "xxxxxxxxxxxx, "yyyyyyyyyyyy", "eoeoeoeoe", "ooooooooo", "aaaaaaaaa")
+
+
+        //                    view = LinearLayout(this@TestActivity).apply {
+//                        orientation = LinearLayout.VERTICAL
+//                        layoutParams = FrameLayout.LayoutParams(300, WRAP_CONTENT).apply { gravity = Gravity.CENTER }
+//                        background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_error, null))
+//                        val tv1 = TextView(this@TestActivity).apply {
+//                            text = resStrings[position];
+//                            background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_primary, null))
+//                            setOnClickListener {
+//                                println("$text Clicked222!!!!")
+//                            }
+//                        }
+//                        val tv2 = TextView(this@TestActivity).apply {
+//                            text = resStrings[position];
+//                            background = ColorDrawable(ResourcesCompat.getColor(this@TestActivity.resources, R.color.design_default_color_secondary, null))
+//                            setOnClickListener {
+//                                println("$text Clicked1111!!!!")
+//                            }
+//                        }
+//                        addView(tv1)
+//                        addView(tv2)
+//                    }
     }
 }
