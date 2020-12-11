@@ -128,22 +128,22 @@ class LinearLayoutManager : SliderView.LayoutManager()  {
 
     }
 
-    override fun getSlidingAmount(view: View, direction: SliderView.SlideDirection): Float {
-        if(direction == SliderView.SlideDirection.RIGHT) {
-            if(sliderView.nextItem.measuredWidth < sliderView.selectedItem.measuredWidth)
-                return sliderView.selectedItem.measuredWidth + itemsLeftMargin
-            else return min(
-                sliderView.nextItem.measuredWidth,
-                sliderView.selectedItem.measuredWidth
-            ) + itemsLeftMargin
+    override fun getSlidingAmount(view: View, direction: SliderView.SlideDirection): Float =
+        with(sliderView) {
+            if (direction == SliderView.SlideDirection.RIGHT) {
+                return if (nextItem.measuredWidth < selectedItem.measuredWidth)
+                    selectedItem.measuredWidth + itemsLeftMargin
+                else min(
+                    nextItem.measuredWidth,
+                    selectedItem.measuredWidth
+                ) + itemsLeftMargin
+            }
+            if (previousItem.measuredWidth > selectedItem.measuredWidth)
+                return previousItem.measuredWidth + itemsLeftMargin
+
+            return min(previousItem.measuredWidth, selectedItem.measuredWidth) + itemsLeftMargin
         }
-        else {
-            if(sliderView.previousItem.measuredWidth > sliderView.selectedItem.measuredWidth)
-                return sliderView.previousItem.measuredWidth + itemsLeftMargin
-            return min(sliderView.previousItem.measuredWidth, sliderView.selectedItem.measuredWidth) + itemsLeftMargin
-            //return sliderView.selectedItem.measuredWidth + itemsLeftMargin
-        }
-    }
+
 
     override fun checkConsistency() {
 
