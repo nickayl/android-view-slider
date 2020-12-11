@@ -1,6 +1,3 @@
-include ':test-activity'
-include ':view-slider-library'
+include ':slider-view'
 include ':app'
-project(':view-slider-library').projectDir = new File(rootDir, 'app/view-slider-library/')
-project(':test-activity').projectDir = new File(rootDir, 'app/test-activity/')
-rootProject.name = "ViewSlider"
+rootProject.name = "SliderView"
