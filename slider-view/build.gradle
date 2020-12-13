@@ -32,34 +32,25 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
 
-    project.tasks.publish.enabled = false
-
-    // Because the components are created only during the afterEvaluate phase, you must
+// Because the components are created only during the afterEvaluate phase, you must
 // configure your publications using the afterEvaluate() lifecycle method.
-    afterEvaluate {
-        publishing {
-            publications {
-                // Creates a Maven publication called "release".
-                release(MavenPublication) {
-                    // Applies the component for the release build variant.
-                    from components.release
+afterEvaluate {
+    project.tasks.publish.enabled = true
+    project.tasks.artifactoryPublish.enabled(true)
 
-                    // You can then customize attributes of the publication as shown below.
-                    groupId = 'com.github.cyclonesword'
-                    artifactId = 'android-view-slider'
-                    version = '1.0.RC'
-                }
-                // Creates a Maven publication called “debug”.
-                debug(MavenPublication) {
-                    // Applies the component for the debug build variant.
-                    from components.debug
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-                    // You can then customize attributes of the publication as shown below.
-                    groupId = 'com.github.cyclonesword'
-                    artifactId = 'android-view-slider'
-                    version = '1.0.RC'
-                }
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.github.cyclonesword'
+                artifactId = 'android-view-slider'
+                version = '1.0.RC'
             }
         }
     }
