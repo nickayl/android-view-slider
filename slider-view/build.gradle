@@ -3,8 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'maven-publish'
 }
-//apply plugin: 'com.github.dcendents.android-maven'
-//group='com.github.cyclonesword'
 
 android {
     compileSdkVersion 29
@@ -21,7 +19,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -48,9 +46,9 @@ afterEvaluate {
                 from components.release
 
                 // You can then customize attributes of the publication as shown below.
-                groupId = 'com.github.cyclonesword'
-                artifactId = 'android-view-slider'
-                version = '1.0.RC'
+                groupId = 'org.javando.android'
+                artifactId = 'view-slider'
+                version = '1.0.RC1'
             }
         }
     }
