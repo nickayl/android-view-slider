@@ -1,5 +1,5 @@
 # SVS - A Simple View Slider for Android
-
+[![](https://jitpack.io/v/cyclonesword/android-view-slider.svg)](https://jitpack.io/#cyclonesword/android-view-slider)
 **SVS** is a simple View Slider for android, that will automatically animate the sliding of views based on a Layout Manager.
 <div align="center"><img src="https://github.com/cyclonesword/android-view-slider/blob/master/readme-animgif-centered-layout.gif?raw=true"></div>
 
@@ -18,7 +18,7 @@ allprojects {
 
 Then, add the dependency to your project-local build.gradle :
 ``` groovy
-implementation 'com.github.cyclonesword:android-view-slider:1.0.RC'
+implementation 'com.github.cyclonesword:android-view-slider:1.0.RC1'
 ```
 
 
