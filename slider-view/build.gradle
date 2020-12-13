@@ -38,7 +38,7 @@ android {
 // configure your publications using the afterEvaluate() lifecycle method.
 afterEvaluate {
     project.tasks.publish.enabled = true
-    project.tasks.artifactoryPublish.enabled(true)
+    //project.tasks.artifactoryPublish.enabled(true)
 
     publishing {
         publications {

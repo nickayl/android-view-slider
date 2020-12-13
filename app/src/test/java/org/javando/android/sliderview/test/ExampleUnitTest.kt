@@ -1,4 +1,4 @@
-package org.javando.android.sliderview
+package org.javando.android.sliderview.test
 
 import org.junit.Test
 

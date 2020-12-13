@@ -4,11 +4,15 @@ plugins {
     id 'maven-publish'
 }
 
+project.tasks.publish.enabled = false
+project.tasks.publishToMavenLocal.enabled = false
+
 android {
+
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "org.javando.android.sliderview"
+        applicationId 'org.javando.android.sliderview.test'
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
@@ -35,8 +39,6 @@ android {
 // Because the components are created only during the afterEvaluate phase, you must
 // configure your publications using the afterEvaluate() lifecycle method.
 afterEvaluate {
-    project.tasks.publish.enabled = false
-    project.tasks.artifactoryPublish.enabled(false)
 
     publishing {
         publications {

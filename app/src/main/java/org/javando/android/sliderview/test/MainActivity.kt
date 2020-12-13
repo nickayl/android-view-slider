@@ -1,4 +1,4 @@
-package org.javando.android.sliderview
+package org.javando.android.sliderview.test
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -11,15 +11,25 @@ import android.widget.ImageView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.javando.android.sliderview.CenteredItemLayoutManager
+import org.javando.android.sliderview.R
+import org.javando.android.sliderview.SliderView
 
-class MainActivity : AppCompatActivity() {
+internal class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ObjectAnimatorBinding")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val res = mutableListOf(R.drawable.book1, R.drawable.book2,R.drawable.book3,R.drawable.book1,R.drawable.book2,R.drawable.book3)
+        val res = mutableListOf(
+            R.drawable.book1,
+            R.drawable.book2,
+            R.drawable.book3,
+            R.drawable.book1,
+            R.drawable.book2,
+            R.drawable.book3
+        )
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
 

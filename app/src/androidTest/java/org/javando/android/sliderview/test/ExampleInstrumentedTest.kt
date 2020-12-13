@@ -1,4 +1,4 @@
-package org.javando.android.sliderview
+package org.javando.android.sliderview.test
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
