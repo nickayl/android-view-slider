@@ -42,7 +42,7 @@ class LeftBoundLayoutManager : SliderView.LayoutManager()  {
 class CenteredItemLayoutManager : SliderView.LayoutManager() {
 
     override var itemsLeftMargin: Float = 0f
-    private var itemsOverflow:Int = 0
+    var itemsOverflow:Int = 0
     override var minimumScrollPercentage = 0.22f
     override var sliderView: SliderView
         get() = super.sliderView

@@ -58,12 +58,12 @@ viewSlider.initialize()
 ### Listening for events
 
 ``` kotlin
-// To listen for the event selection event, implement a callback function:
+// To listen for the selection event, implement a callback function:
 viewSlider.onItemSelectedListener = { view, item, index ->  
   println("Selected $view at index $index with item $item")  
 } 
  
-// To listen for view click event, implement a callback function:
+// To listen for the view click event, implement a callback function:
 viewSlider.onItemClickListener = { view, item, index ->  
   println("Clidked $view at index $index with item $item")  
 }
@@ -80,6 +80,23 @@ The customizations depends on the Layout Manager used. The default is the `Cente
 viewSlider.selectedItemPosition = 3
 ```
 
+### Set custom view animation 
+You can set a custom set of animations to be performed when the user starts dragging onto the view:
+You can leave the target param of the `ObjectAnimator` to `null`, it will be dynamically set once a view is touched.
+``` kotlin
+viewSlider.onStartDragAnimation = ObjectAnimator.ofFloat(null, "translationY", -100f).apply { 
+duration = 150 }  
+
+viewSlider.onEndDragAnimation = ObjectAnimator.ofFloat(null, "translationY", 0f).apply {
+duration = 150 }
+```
+
+### Disable view animations 
+If you want to disable the onDragStart/End animations:
+``` kotlin
+viewSlider.disableOnItemTouchAnimations()
+```
+
 ### Set a different layout manager
 There are three built-in Layout Managers: 
 <b>`CenteredItemLayoutManager`</b>,
@@ -88,4 +105,33 @@ There are three built-in Layout Managers:
 
 ``` kotlin
 viewSlider.layoutManager = CenteredItemLayoutManager()
+```
+**All Layout Managers** support setting a custom minimum percentage of the viewport's width necessary to perform the scroll. By default it is set at 22% .
+
+``` kotlin
+viewSlider.layoutManager.minimumScrollPercentage = 0.20f
+```
+The **CenteredItemLayoutManager** support also the customization of the amount of overflow for the left and right items:
+``` kotlin
+val centeredItemLayoutManager = CenteredItemLayoutManager()  
+centeredItemLayoutManager.itemsOverflow = 100
+viewSlider.layoutManager = centeredItemLayoutManager  
+```
+
+### Dynamycally modify underlying dataset
+Like normal ListView (or RecyclerView) you can dynamically add, remove or change the views mapped by your adapter by simply call the `notifyDataSetChanged` function on the sliderView instance. 
+Suppose you have a network operation and at the end of it you want to remove or add some views to your sliderView, then you can do like the following example:
+
+``` kotlin
+GlobalScope.launch {  // Simulating a network operation on a background thread...
+  delay(1500)  // A delay to simulate network operation
+  
+  ... // Additional operations...
+  
+  for(i in 0 until res.size-3)  // suppose we want to remove all elements but the last 3
+      res.removeAt(i)  //res is our sample resource list containing drawables
+      
+  // At the end notify the viewSlider and it will automatically update itself
+  runOnUiThread { viewSlider.notifyDataSetChanged() }  
+}
 ```

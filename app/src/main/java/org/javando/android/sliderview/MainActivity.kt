@@ -1,16 +1,20 @@
 package org.javando.android.sliderview
 
-import android.graphics.drawable.ColorDrawable
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.content.res.ResourcesCompat
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    @SuppressLint("ObjectAnimatorBinding")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -19,8 +23,12 @@ class MainActivity : AppCompatActivity() {
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
-        viewSlider.selectedItemPosition = 3
-        viewSlider.layoutManager = CenteredItemLayoutManager()
+        viewSlider.selectedItemPosition = 1
+        val centeredItemLayoutManager = CenteredItemLayoutManager()
+        viewSlider.layoutManager = centeredItemLayoutManager
+        centeredItemLayoutManager.itemsOverflow = 100
+//        viewSlider.layoutManager.minimumScrollPercentage = 0.20f
+
         viewSlider.adapter = object : SliderView.Adapter<Int> {
             override val count: Int
                 get() = res.size
@@ -32,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             override fun getView(position: Int, parent: SliderView, convertView: View?): View {
                 var view = convertView
                 if(convertView == null) {
-
+                    println("Convertview $position is null. creating a new view object")
                     view = ImageView(this@MainActivity).apply {
                         if(position==3)
                             layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
@@ -42,7 +50,8 @@ class MainActivity : AppCompatActivity() {
                         scaleType = ImageView.ScaleType.CENTER_CROP
                         //background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
                     }
-                }
+                } else
+                    println("convertView $position is NOT null, reusing previous view object...")
                 return view!!
             }
         }
@@ -56,12 +65,17 @@ class MainActivity : AppCompatActivity() {
             println("Clidked $view at index $index with item $item")
         }
         //viewSlider.disableOnItemTouchAnimations()
+        viewSlider.onStartDragAnimation = ObjectAnimator.ofFloat(null, "translationY", -100f).apply { duration = 150 }
+        viewSlider.onEndDragAnimation = ObjectAnimator.ofFloat(null, "translationY", 0f).apply { duration = 150 }
         viewSlider.initialize()
 
 
-
-//        viewSlider.onTouchUpAnimators = AnimatorSet().apply { play(scaleUpAnim) }
-//        viewSlider.onTouchDownAnimators = AnimatorSet().apply { play(scaleDownAnim) }
+        GlobalScope.launch {
+            delay(1500)
+            for(i in 0 until res.size-3)
+                res.removeAt(i)
+            runOnUiThread { viewSlider.notifyDataSetChanged() }
+        }
 
         //        val scaleAnim = ValueAnimator.ofFloat(1f, 1.2f).apply {
 //            duration = 100
