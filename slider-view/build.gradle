@@ -33,6 +33,8 @@ android {
         jvmTarget = '1.8'
     }
 
+    project.tasks.publish.enabled = false
+
     // Because the components are created only during the afterEvaluate phase, you must
 // configure your publications using the afterEvaluate() lifecycle method.
     afterEvaluate {
