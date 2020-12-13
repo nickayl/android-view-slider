@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
         viewSlider.selectedItemPosition = 3
-        viewSlider.layoutManager = LinearLayoutManager()
+        viewSlider.layoutManager = CenteredItemLayoutManager()
         viewSlider.adapter = object : SliderView.Adapter<Int> {
             override val count: Int
                 get() = res.size
@@ -34,12 +35,12 @@ class MainActivity : AppCompatActivity() {
 
                     view = ImageView(this@MainActivity).apply {
                         if(position==3)
-                            layoutParams = FrameLayout.LayoutParams(850, ViewGroup.LayoutParams.WRAP_CONTENT)
+                            layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
                         else
-                            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                            layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
                         setImageResource(getItem(position))
                         scaleType = ImageView.ScaleType.CENTER_CROP
-                        background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
+                        //background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
                     }
                 }
                 return view!!
