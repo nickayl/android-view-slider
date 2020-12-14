@@ -1,7 +1,13 @@
 # SVS - A Simple View Slider for Android
-[![](https://jitpack.io/v/cyclonesword/android-view-slider.svg)](https://jitpack.io/#cyclonesword/android-view-slider)
+<br>[![](https://jitpack.io/v/cyclonesword/android-view-slider.svg)](https://jitpack.io/#cyclonesword/android-view-slider)
+
 **SVS** is a simple View Slider for android, that will automatically animate the sliding of views based on a Layout Manager.
-<div align="center"><img src="https://github.com/cyclonesword/android-view-slider/blob/master/readme-animgif-centered-layout.gif?raw=true"></div>
+<div style="width:100%">
+<img style="float:left;" src="https://github.com/cyclonesword/android-view-slider/blob/master/readme-animgif-centered-layout.gif?raw=true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img style="float:right" src="https://github.com/cyclonesword/android-view-slider/blob/master/readme-animgif-linear-layout.gif?raw=true">
+</div>
+
+The left image shows the `CenteredItemLayoutManager`, the right one the `LinearLayoutManager`.
 
 ## Installation instructions
 
@@ -18,7 +24,7 @@ allprojects {
 
 Then, add the dependency to your project-local build.gradle :
 ``` groovy
-implementation 'com.github.cyclonesword:android-view-slider:1.0.RC1'
+implementation 'com.github.cyclonesword:android-view-slider:1.0.RC'
 ```
 
 
@@ -26,8 +32,8 @@ implementation 'com.github.cyclonesword:android-view-slider:1.0.RC1'
 
 ### You can quick start your development using the default centered-view based Layout Manager.
 
-
-Once obtained an instance of the ViewSlider from your XML layout file,  implement an adapter to provide the views to be displayed by SVS and finally call the initialize() function, like the example below:
+Once obtained an instance of the ViewSlider from your XML layout file,  implement the SliderView.Adapter interface to provide the views to be displayed by SVS. 
+At the end call the **`initialize()`** function, like the example below:
 ``` kotlin
 val res = listOf(R.drawable.book1, R.drawable.book2,R.drawable.book3,R.drawable.book1,R.drawable.book2,R.drawable.book3)
 
@@ -74,15 +80,14 @@ viewSlider.onItemClickListener = { view, item, index ->
 The customizations depends on the Layout Manager used. The default is the `CenteredItemLayoutManager`.
 
 ### Set the selected view 
- In the default centered-view layout manager, this will start the SVS with the selected item at the center. 
- An invalid value will throw an Exception.
+The default position is 0 (the first element provided by the adapter).
 ``` kotlin
 viewSlider.selectedItemPosition = 3
 ```
 
 ### Set custom view animation 
-You can set a custom set of animations to be performed when the user starts dragging onto the view:
-You can leave the target param of the `ObjectAnimator` to `null`, it will be dynamically set once a view is touched.
+You can set a custom set of animations to be performed when the user starts dragging onto the view.
+Assign an `ObjectAnimator` instance to the `onStartDragAnimation` and  `onEndDragAnimation`  and leave the target parameter to `null`, becouse it will be dynamically set once a view is touched.
 ``` kotlin
 viewSlider.onStartDragAnimation = ObjectAnimator.ofFloat(null, "translationY", -100f).apply { 
 duration = 150 }  
@@ -111,11 +116,18 @@ viewSlider.layoutManager = CenteredItemLayoutManager()
 ``` kotlin
 viewSlider.layoutManager.minimumScrollPercentage = 0.20f
 ```
-The **CenteredItemLayoutManager** support also the customization of the amount of overflow for the left and right items:
+The **CenteredItemLayoutManager** support also the customization of the amount of overflow for the left and right views:
 ``` kotlin
 val centeredItemLayoutManager = CenteredItemLayoutManager()  
 centeredItemLayoutManager.itemsOverflow = 100
 viewSlider.layoutManager = centeredItemLayoutManager  
+```
+
+The **LinearLayoutManager** has the `itemsLeftMargin`  property that is used to give a left margin to the views:
+``` kotlin  
+val linearLayoutManager = LinearLayoutManager() 
+linearLayoutManager.itemsLeftMargin= 80f  
+viewSlider.layoutManager = linearLayoutManager
 ```
 
 ### Dynamycally modify underlying dataset

@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.javando.android.sliderview.CenteredItemLayoutManager
+import org.javando.android.sliderview.LinearLayoutManager
 import org.javando.android.sliderview.R
 import org.javando.android.sliderview.SliderView
 
@@ -22,7 +23,7 @@ internal class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val res = mutableListOf(
+        val books = mutableListOf(
             R.drawable.book1,
             R.drawable.book2,
             R.drawable.book3,
@@ -31,13 +32,29 @@ internal class MainActivity : AppCompatActivity() {
             R.drawable.book3
         )
 
+        val series = mutableListOf(
+            R.drawable.series1,
+            R.drawable.series2,
+            R.drawable.series3,
+            R.drawable.series1,
+            R.drawable.series2,
+            R.drawable.series3
+        )
+
+        val res: MutableList<Int> = series
+
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
         viewSlider.selectedItemPosition = 1
-        val centeredItemLayoutManager = CenteredItemLayoutManager()
-        viewSlider.layoutManager = centeredItemLayoutManager
-        centeredItemLayoutManager.itemsOverflow = 100
-//        viewSlider.layoutManager.minimumScrollPercentage = 0.20f
+
+//        val centeredItemLayoutManager = CenteredItemLayoutManager()
+//        viewSlider.layoutManager = centeredItemLayoutManager
+//        centeredItemLayoutManager.itemsOverflow = 100
+        val linearLayoutManager = LinearLayoutManager()
+        linearLayoutManager.itemsLeftMargin = 70f
+        viewSlider.layoutManager = linearLayoutManager
+
+        viewSlider.layoutManager.minimumScrollPercentage = 0.20f
 
         viewSlider.adapter = object : SliderView.Adapter<Int> {
             override val count: Int
@@ -80,12 +97,12 @@ internal class MainActivity : AppCompatActivity() {
         viewSlider.initialize()
 
 
-        GlobalScope.launch {
-            delay(1500)
-            for(i in 0 until res.size-3)
-                res.removeAt(i)
-            runOnUiThread { viewSlider.notifyDataSetChanged() }
-        }
+//        GlobalScope.launch {
+//            delay(1500)
+//            for(i in 0 until res.size-3)
+//                res.removeAt(i)
+//            runOnUiThread { viewSlider.notifyDataSetChanged() }
+//        }
 
         //        val scaleAnim = ValueAnimator.ofFloat(1f, 1.2f).apply {
 //            duration = 100
