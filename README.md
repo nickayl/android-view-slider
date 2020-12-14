@@ -1,5 +1,11 @@
 # SVS - A Simple View Slider for Android
 <br>[![](https://jitpack.io/v/cyclonesword/android-view-slider.svg)](https://jitpack.io/#cyclonesword/android-view-slider)
+[![](https://badgen.net/badge/android/API%2021+/green)](https://jitpack.io/#cyclonesword/android-view-slider)
+[![](https://badgen.net/badge/license/MIT/red)](https://jitpack.io/#cyclonesword/android-view-slider)
+[![](https://badgen.net/badge/kotlin/1.4)](https://jitpack.io/#cyclonesword/android-view-slider)
+
+
+
 
 **SVS** is a simple View Slider for android, that will automatically animate the sliding of views based on a Layout Manager.
 <div style="width:100%">
