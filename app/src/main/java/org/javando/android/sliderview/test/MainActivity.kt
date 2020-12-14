@@ -41,20 +41,21 @@ internal class MainActivity : AppCompatActivity() {
             R.drawable.series3
         )
 
-        val res: MutableList<Int> = series
+        var res: MutableList<Int> = series
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
-        viewSlider.selectedItemPosition = 1
+        viewSlider.selectedItemPosition = 0
 
-//        val centeredItemLayoutManager = CenteredItemLayoutManager()
-//        viewSlider.layoutManager = centeredItemLayoutManager
-//        centeredItemLayoutManager.itemsOverflow = 100
-        val linearLayoutManager = LinearLayoutManager()
-        linearLayoutManager.itemsLeftMargin = 70f
-        viewSlider.layoutManager = linearLayoutManager
+        val centeredItemLayoutManager = CenteredItemLayoutManager()
+        viewSlider.layoutManager = centeredItemLayoutManager
+        centeredItemLayoutManager.itemsOverflow = 50
+        res = books
+//        val linearLayoutManager = LinearLayoutManager()
+//        linearLayoutManager.itemsLeftMargin = 70f
+//        viewSlider.layoutManager = linearLayoutManager
 
-        viewSlider.layoutManager.minimumScrollPercentage = 0.20f
+        //viewSlider.layoutManager.minimumScrollPercentage = 0.20f
 
         viewSlider.adapter = object : SliderView.Adapter<Int> {
             override val count: Int

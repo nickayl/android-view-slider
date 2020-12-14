@@ -2,14 +2,22 @@ package org.javando.android.sliderview
 
 import android.animation.Animator
 import android.animation.AnimatorInflater
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.os.SystemClock
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
+import android.view.MotionEvent.*
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ListView
+import android.widget.ScrollView
+import androidx.core.view.ScrollingView
 import androidx.core.view.children
+import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
 class SliderView @JvmOverloads constructor(
@@ -19,8 +27,15 @@ class SliderView @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-    private val defaultOnTouchDownAnim = AnimatorInflater.loadAnimator(context, R.animator.scaleup_animator).setDuration(100)
-    private val defaultOnTouchUpAnim = AnimatorInflater.loadAnimator(context, R.animator.scaledown_animator).setDuration(100)
+    private var scrollView: ScrollView? = null
+    private val defaultOnTouchDownAnim = AnimatorInflater.loadAnimator(
+        context,
+        R.animator.scaleup_animator
+    ).setDuration(100)
+    private val defaultOnTouchUpAnim = AnimatorInflater.loadAnimator(
+        context,
+        R.animator.scaledown_animator
+    ).setDuration(100)
 
     var onStartDragAnimation: Animator? = defaultOnTouchDownAnim
     var onEndDragAnimation: Animator? = defaultOnTouchUpAnim
@@ -49,10 +64,10 @@ class SliderView @JvmOverloads constructor(
     }
 
     internal val nextItem: View
-        get() = views[selectedItemPosition+1].view
+        get() = views[selectedItemPosition + 1].view
 
     internal val previousItem: View
-        get() = views[selectedItemPosition-1].view
+        get() = views[selectedItemPosition - 1].view
 
     val selectedItem: View
         get() = views[selectedItemPosition].view
@@ -66,26 +81,29 @@ class SliderView @JvmOverloads constructor(
 
     internal fun getRightItems(): List<View> {
         return if(hasRight())
-            views.subList(selectedItemPosition+1, views.size).map { it.view }
+            views.subList(selectedItemPosition + 1, views.size).map { it.view }
         else
             emptyList()
     }
 
     private val listener = object : OnTouchListener {
         //private var endX = 0f
-        private var startX = 0f
-        private var rawStartX = 0f
-        private var dxsum = 0f
-        private var hasMoved = false
+        var startX = 0f
+        var rawStartX = 0f
+        var dxsum = 0f
+        var hasMoved = false
+        var interruptedTouchView: View? = null
+            internal set
 
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             onStartDragAnimation?.setTarget(view)
             onEndDragAnimation?.setTarget(view)
             //val centerView = view.width / 2
 
+            println("scroll ${event.action}")
 
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
+                ACTION_DOWN -> {
                     dxsum = 0f
                     hasMoved = false
                     startX = event.x;
@@ -94,22 +112,21 @@ class SliderView @JvmOverloads constructor(
 //                            "    Touch DOWN rawXY: (x,y) = (${event.rawX}, ${event.rawY})")
                 }
 
-                MotionEvent.ACTION_UP -> {
+                ACTION_UP -> {
                     val dx = event.rawX - rawStartX;
 //                    Log.d("TEST", "Touch UP XY:    (x,y) = (${event.x}, ${event.y}), DX = ($dxsum)\n" +
 //                            "    Touch UP rawXY: (x,y) = (${event.rawX}, ${event.rawY}), rawDX = ($dx)")
 
                     val abs = abs(dx)
                     val elapsedTimeFromDownToUp = SystemClock.uptimeMillis() - event.downTime
-                    if(abs <= 2 && elapsedTimeFromDownToUp <= 225) {
+                    if (abs <= 2 && elapsedTimeFromDownToUp <= 225) {
                         onStartDragAnimation?.cancel()
                         println("== Click detected ==")
                         view.performClick()
                         val wrapper = views.find { it.view == view }!!
                         onItemClickListener?.invoke(view, wrapper.item, wrapper.position)
-                        if(abs > 0) slide(-dxsum)
-                    }
-                    else {
+                        if (abs > 0) slide(-dxsum)
+                    } else {
                         startOnTouchUpAnimation()
                         when {
                             abs <= (width * layoutManager.minimumScrollPercentage) -> slide(-dxsum)
@@ -117,15 +134,21 @@ class SliderView @JvmOverloads constructor(
                             else -> slideLeft(view, dxsum)
                         }
                     }
+                    interruptedTouchView = null
                 }
 
-                MotionEvent.ACTION_MOVE -> {
+                ACTION_MOVE -> {
                     startOnTouchDownAnimation()
                     val dx = event.x - startX
                     children.forEach { it.translationX += dx }
                     dxsum += dx
                     hasMoved = true
-                    //Log.d("TEST", "Touch move: (x,y) = (${event.x}, ${event.y})")
+                    Log.d("TEST", "Touch move: (startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
+                }
+
+                ACTION_CANCEL -> {
+                    interruptedTouchView = view
+                    hasMoved = false
                 }
             }
 
@@ -156,36 +179,36 @@ class SliderView @JvmOverloads constructor(
 
     fun slideToPosition(position: Int) {
         while(position > selectedItemPosition && hasRight())
-            slideRight(selectedItem, 0f,false)
+            slideRight(selectedItem, 0f, false)
         while(position < selectedItemPosition && hasLeft())
-            slideLeft(selectedItem, 0f,false)
+            slideLeft(selectedItem, 0f, false)
     }
 
-    private fun slideRight(v: View, manualScrolledAmount: Float, animations:Boolean = true) {
+    private fun slideRight(v: View, manualScrolledAmount: Float, animations: Boolean = true) {
         val view = views.find { v == it.view }!!
         println("Slide RIGHT detected...")
         if(hasRight()) {
             val amount = layoutManager.getSlidingAmount(view.view, SlideDirection.RIGHT) * -1
-            slide(amount - manualScrolledAmount,animations)
+            slide(amount - manualScrolledAmount, animations)
             selectedItemPosition++
             onItemSelectedListener?.invoke(view.view, view.item, selectedItemPosition)
         } else
-            slide(-manualScrolledAmount,animations)
+            slide(-manualScrolledAmount, animations)
     }
 
-    private fun slideLeft(v: View, manualScrolledAmount: Float, animations:Boolean = true) {
+    private fun slideLeft(v: View, manualScrolledAmount: Float, animations: Boolean = true) {
         val view = views.find { v == it.view }!!
         println("Slide LEFT detected...")
         if(hasLeft()) {
             val amount = layoutManager.getSlidingAmount(view.view, SlideDirection.LEFT)
-            slide(amount - manualScrolledAmount,animations)
+            slide(amount - manualScrolledAmount, animations)
             selectedItemPosition--
             onItemSelectedListener?.invoke(view.view, view.item, selectedItemPosition)
         } else
-            slide(-manualScrolledAmount,animations)
+            slide(-manualScrolledAmount, animations)
     }
 
-    private fun slide(pxAmount: Float, animations:Boolean = true) {
+    private fun slide(pxAmount: Float, animations: Boolean = true) {
         if(animations)
             views.forEach {
                 it.view.animate().setDuration(100).translationXBy(pxAmount).start()
@@ -199,8 +222,94 @@ class SliderView @JvmOverloads constructor(
             //layoutManager = LeftBoundLayoutManager(this)
             //layoutManager = FixedItemWidthLayoutManager(this)
             preloadViews()
+            preventScrollViewTouchInterceptor()
+            requestDisallowInterceptTouchEvent(true);
         } else
             throw IllegalStateException("The adapter must be set before calling the initialize() member function")
+    }
+
+    private class JavandoScrollView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0
+    ) : ScrollView(context, attrs, defStyleAttr, defStyleRes) {
+
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        println("Intercepted touch event: ${ev?.action}")
+        return super.onInterceptTouchEvent(ev)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun preventScrollViewTouchInterceptor() {
+        var parent = this.parent
+        while(parent != null) {
+            if(parent is ScrollView) {
+                // ==========
+                parent.setOnTouchListener(object : OnTouchListener {
+                    private var startX = 0f
+                    private var rawStartX = 0f
+                    private var dxsum = 0f
+
+                    override fun onTouch(v: View, event: MotionEvent): Boolean {
+                        if(listener.interruptedTouchView == null)
+                            return false
+                        var what = "UP"
+                        when(event.action) {
+                            ACTION_UP -> {
+                                val view = listener.interruptedTouchView!!
+                                val abs = abs(dxsum)
+                                val elapsedTimeFromDownToUp = SystemClock.uptimeMillis() - event.downTime
+                                if (abs <= 2 && elapsedTimeFromDownToUp <= 225) {
+                                    onStartDragAnimation?.cancel()
+                                    println("== Click detected ==")
+                                    view.performClick()
+                                    val wrapper = views.find { it.view == view }!!
+                                    onItemClickListener?.invoke(view, wrapper.item, wrapper.position)
+                                    if (abs > 0) slide(-dxsum)
+                                } else {
+                                    onEndDragAnimation?.start()
+                                    when {
+                                        abs <= (width * layoutManager.minimumScrollPercentage) -> slide(-dxsum)
+                                        dxsum < 0 -> slideRight(view, dxsum)
+                                        else -> slideLeft(view, dxsum)
+                                    }
+                                }
+                                startX = 0f
+                                dxsum = 0f
+                                rawStartX = 0f
+                                listener.interruptedTouchView = null
+                            }
+                            ACTION_MOVE -> {
+                                if(rawStartX == 0f)
+                                    rawStartX = event.rawX
+                                if(startX == 0f)
+                                    startX = event.x
+                                what = "MOVE"
+                                val dx = event.x - startX
+                                if(dxsum == 0f)
+                                    dxsum = listener.dxsum
+                                dxsum += dx
+                                startX = event.x
+                                children.forEach { it.translationX += dx }
+
+                            }
+                        }
+
+                        println("Touch $what coming from ScrollView ${event.action} (x,y)=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
+
+                        return false
+                    }
+                })
+                // =============
+                println("Detected a parent ScrollView...")
+                scrollView = parent
+            }
+            parent = parent.parent
+        }
+
     }
 
     private class ChildrenTouchInterceptor(val sliderView: SliderView, val parent: View) : OnTouchListener {
@@ -219,7 +328,7 @@ class SliderView @JvmOverloads constructor(
                     val interceptor = ChildrenTouchInterceptor(this, view)
                     view.children.forEach { it.setOnTouchListener(interceptor) }
                 }
-                addView(view,i)
+                addView(view, i)
                 view.setOnTouchListener(listener)
             }
         }
