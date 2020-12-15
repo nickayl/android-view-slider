@@ -245,6 +245,7 @@ class SliderView @JvmOverloads constructor(
             if(parent is ScrollView) {
                 // ==========
                 parent.setOnTouchListener(object : OnTouchListener {
+                    private var hasMoved: Boolean = false
                     private var startX = 0f
                     private var rawStartX = 0f
                     private var dxsum = 0f
@@ -252,9 +253,12 @@ class SliderView @JvmOverloads constructor(
                     override fun onTouch(v: View, event: MotionEvent): Boolean {
                         if(listener.interruptedTouchView == null)
                             return false
-                        var what = "UP"
+                        var what = "UMKNOWN"
                         when(event.action) {
                             ACTION_UP -> {
+                                what = "UP"
+                                if(dxsum == 0f)
+                                    dxsum = listener.dxsum
                                 val view = listener.interruptedTouchView!!
                                 val abs = abs(dxsum)
                                 val elapsedTimeFromDownToUp = SystemClock.uptimeMillis() - event.downTime
@@ -273,6 +277,7 @@ class SliderView @JvmOverloads constructor(
                                         else -> slideLeft(view, dxsum)
                                     }
                                 }
+                                println("Touch UP=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
                                 startX = 0f
                                 dxsum = 0f
                                 rawStartX = 0f
@@ -286,6 +291,7 @@ class SliderView @JvmOverloads constructor(
                                     listener.dxsum = 0f
                                     return false
                                 }
+                                hasMoved = true
                                 if(dxsum == 0f) {
                                     dxsum = listener.dxsum
                                 }
