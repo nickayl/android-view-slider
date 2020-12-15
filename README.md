@@ -30,7 +30,7 @@ allprojects {
 
 Then, add the dependency to your project-local build.gradle :
 ``` groovy
-implementation 'com.github.cyclonesword:android-view-slider:1.0.RC3'
+implementation 'com.github.cyclonesword:android-view-slider:1.0.RC4'
 ```
 
 
