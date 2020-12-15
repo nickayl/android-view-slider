@@ -90,8 +90,10 @@ class SliderView @JvmOverloads constructor(
         //private var endX = 0f
         var startX = 0f
         var rawStartX = 0f
+        var startY = 0f
         var dxsum = 0f
         var hasMoved = false
+       // var isTouchOwner = true
         var interruptedTouchView: View? = null
             internal set
 
@@ -106,7 +108,9 @@ class SliderView @JvmOverloads constructor(
                 ACTION_DOWN -> {
                     dxsum = 0f
                     hasMoved = false
+                  //  isTouchOwner = true
                     startX = event.x;
+                    startY = event.y;
                     rawStartX = event.rawX
 //                    Log.d("TEST", "Touch DOWN XY:  (x,y) = (${event.x}, ${event.y})\n"+
 //                            "    Touch DOWN rawXY: (x,y) = (${event.rawX}, ${event.rawY})")
@@ -135,20 +139,26 @@ class SliderView @JvmOverloads constructor(
                         }
                     }
                     interruptedTouchView = null
+                    Log.d("TEST", "[LISTENER]Touch UP: (startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
                 }
 
                 ACTION_MOVE -> {
                     startOnTouchDownAnimation()
                     val dx = event.x - startX
+                    val dy = event.y - startY
                     children.forEach { it.translationX += dx }
                     dxsum += dx
                     hasMoved = true
-                    Log.d("TEST", "Touch move: (startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
+//                    if(abs(dy) > abs(dx)) {
+//                        isTouchOwner = false
+//                        return false
+//                    }
+                    Log.d("TEST", "[LISTENER]Touch MOVE: dy=$dy(startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
                 }
 
                 ACTION_CANCEL -> {
                     interruptedTouchView = view
-                    hasMoved = false
+                    //hasMoved = false
                 }
             }
 
@@ -228,20 +238,6 @@ class SliderView @JvmOverloads constructor(
             throw IllegalStateException("The adapter must be set before calling the initialize() member function")
     }
 
-    private class JavandoScrollView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0,
-        defStyleRes: Int = 0
-    ) : ScrollView(context, attrs, defStyleAttr, defStyleRes) {
-
-    }
-
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        println("Intercepted touch event: ${ev?.action}")
-        return super.onInterceptTouchEvent(ev)
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun preventScrollViewTouchInterceptor() {
         var parent = this.parent
@@ -283,24 +279,32 @@ class SliderView @JvmOverloads constructor(
                                 listener.interruptedTouchView = null
                             }
                             ACTION_MOVE -> {
+                                if(abs(listener.dxsum) <= 3) {
+                                    println("passing control to scrollview... ${listener.dxsum}")
+                                    dxsum = listener.dxsum
+                                    children.forEach { it.translationX += -listener.dxsum }
+                                    listener.dxsum = 0f
+                                    return false
+                                }
+                                if(dxsum == 0f) {
+                                    dxsum = listener.dxsum
+                                }
                                 if(rawStartX == 0f)
                                     rawStartX = event.rawX
                                 if(startX == 0f)
                                     startX = event.x
                                 what = "MOVE"
                                 val dx = event.x - startX
-                                if(dxsum == 0f)
-                                    dxsum = listener.dxsum
+
                                 dxsum += dx
                                 startX = event.x
                                 children.forEach { it.translationX += dx }
-
                             }
                         }
 
                         println("Touch $what coming from ScrollView ${event.action} (x,y)=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
 
-                        return false
+                        return true
                     }
                 })
                 // =============
