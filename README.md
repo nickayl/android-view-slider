@@ -136,7 +136,7 @@ linearLayoutManager.itemsLeftMargin= 80f
 viewSlider.layoutManager = linearLayoutManager
 ```
 
-### Dynamycally modify underlying dataset
+### Dynamically modify underlying dataset
 Like normal ListView (or RecyclerView) you can dynamically add, remove or change the views mapped by your adapter by simply call the `notifyDataSetChanged` function on the sliderView instance. 
 Suppose you have a network operation and at the end of it you want to remove or add some views to your sliderView, then you can do like the following example:
 
