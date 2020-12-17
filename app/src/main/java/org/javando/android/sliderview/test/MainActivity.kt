@@ -2,12 +2,15 @@ package org.javando.android.sliderview.test
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,6 +25,7 @@ internal class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_scrollview)
+
 
         val books = mutableListOf(
             R.drawable.book1,
@@ -41,6 +45,8 @@ internal class MainActivity : AppCompatActivity() {
             R.drawable.series3
         )
 
+        val resStrings = mutableListOf("Ciao ciao", "xxxxxxxxxxxx", "yyyyyyyyyyyy", "eoeoeoeoe", "ooooooooo", "aaaaaaaaa")
+
         var res: MutableList<Int> = series
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
@@ -50,7 +56,7 @@ internal class MainActivity : AppCompatActivity() {
         val centeredItemLayoutManager = CenteredItemLayoutManager()
         viewSlider.layoutManager = centeredItemLayoutManager
         centeredItemLayoutManager.itemsOverflow = 50
-        res = books
+        //res = books
 //        val linearLayoutManager = LinearLayoutManager()
 //        linearLayoutManager.itemsLeftMargin = 70f
 //        viewSlider.layoutManager = linearLayoutManager
@@ -67,21 +73,30 @@ internal class MainActivity : AppCompatActivity() {
 
             override fun getView(position: Int, parent: SliderView, convertView: View?): View {
                 var view = convertView
-                if(convertView == null) {
+                if (convertView == null) {
                     println("Convertview $position is null. creating a new view object")
-                    view = ImageView(this@MainActivity).apply {
-                        if(position==3)
-                            layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                        else
-                            layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                        setImageResource(getItem(position))
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                        //background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
-                    }
+//                        view = LayoutInflater.from(this@MainActivity).inflate(R.layout.layout_test,null)
+//                        val b1 = view.findViewById<Button>(R.id.b1).apply { setOnClickListener { println("Clicked button 1111!") }; setOnLongClickListener { println("On long click listener! ON BUTTON 1"); true } }
+//                        val b2 = view.findViewById<Button>(R.id.b2).apply { setOnClickListener { println("Clicked button 2222!") } }
+//                        val img = view.findViewById<ImageView>(R.id.img1).apply { setOnClickListener { println("Clicked imageview 2222!") } }
+//                        val switch = view.findViewById<Switch>(R.id.switch1).apply { setOnClickListener { println("Clicked switch 2222!") } }
+//                        val bext = findViewById<Button>(R.id.bext).apply { setOnClickListener { println("Clicked extra button 333!") } }
+                     view = ImageView(this@MainActivity).apply {
+                                            if(position==3)
+                                                layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                            else
+                                                layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                            setImageResource(getItem(position))
+                                            scaleType = ImageView.ScaleType.CENTER_CROP
+                         setOnClickListener { println("image $position clicked!") }
+                         setOnLongClickListener { println("Image $position lONG clocked"); true }
+                    background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
+                                        }
                 } else
                     println("convertView $position is NOT null, reusing previous view object...")
                 return view!!
             }
+
         }
 
 
@@ -97,6 +112,77 @@ internal class MainActivity : AppCompatActivity() {
         viewSlider.onEndDragAnimation = ObjectAnimator.ofFloat(null, "translationY", 0f).apply { duration = 150 }
         viewSlider.initialize()
 
+
+
+        //                    view = LayoutInflater.from(this@MainActivity).inflate(R.layout.layout_test,null)
+        //                    val b1 = view.findViewById<Button>(R.id.b1).apply { setOnClickListener { println("Clicked button 1111!") }; setOnLongClickListener { println("On long click listener! ON BUTTON 1"); true } }
+        //                    val b2 = view.findViewById<Button>(R.id.b2).apply { setOnClickListener { println("Clicked button 2222!") } }
+        //                    val img = view.findViewById<ImageView>(R.id.img1).apply { setOnClickListener { println("Clicked imageview 2222!") } }
+        //                    val switch = view.findViewById<Switch>(R.id.switch1).apply { setOnClickListener { println("Clicked switch 2222!") } }
+        //                    val bext = findViewById<Button>(R.id.bext).apply { setOnClickListener { println("Clicked extra button 333!") } }
+
+
+        //                     view = ImageView(this@MainActivity).apply {
+        //                                            if(position==3)
+        //                                                layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+        //                                            else
+        //                                                layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+        //                                            setImageResource(getItem(position))
+        //                                            scaleType = ImageView.ScaleType.CENTER_CROP
+        //                    background = ColorDrawable(ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null))
+        //                                        }
+
+        //                    view = LinearLayout(this@MainActivity).apply {
+        //                        orientation = LinearLayout.VERTICAL
+        //                        layoutParams = FrameLayout.LayoutParams(500, 700)
+        ////                            .apply { gravity = Gravity.CENTER }
+        //                        background = ColorDrawable(
+        //                            ResourcesCompat.getColor(this@MainActivity.resources, R.color.design_default_color_error, null)
+        //                        )
+        //                        val tv1 = TextView(this@MainActivity).apply {
+        //                            text = resStrings[position]+"1";
+        //                            background = ColorDrawable(
+        //                                ResourcesCompat.getColor(
+        //                                    this@MainActivity.resources,
+        //                                    R.color.design_default_color_primary,
+        //                                    null
+        //                                )
+        //                            )
+        //                            setOnClickListener {
+        //                                println("$text Clicked 1111!!!!")
+        //                            }
+        //
+        //                            setOnLongClickListener {
+        //                                println("on long click1111!!")
+        //                                true
+        //                            }
+        //
+        ////                            setOnTouchListener { v, event ->
+        ////                                println("Touch evento on $v: $event")
+        ////                                false
+        ////                            }
+        //                        }
+        //                        val tv2 = TextView(this@MainActivity).apply {
+        //                            text = resStrings[position] + "2";
+        //                            background = ColorDrawable(
+        //                                ResourcesCompat.getColor(
+        //                                    this@MainActivity.resources,
+        //                                    R.color.design_default_color_secondary,
+        //                                    null
+        //                                )
+        //                            )
+        //                            setOnClickListener {
+        //                                println("$text Clicked 22222!!!!")
+        //                            }
+        //
+        //                            setOnLongClickListener {
+        //                                println("on long cklick222!!")
+        //                                true
+        //                            }
+        //                        }
+        //                        addView(tv1)
+        //                        addView(tv2)
+        //                    }
 
 //        GlobalScope.launch {
 //            delay(1500)

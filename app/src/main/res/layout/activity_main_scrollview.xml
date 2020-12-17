@@ -12,6 +12,16 @@
         android:clipChildren="false"
         tools:context=".test.MainActivity">
 
+        <Button
+            android:id="@+id/bext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="Button"
+            app:layout_constraintBottom_toTopOf="@+id/slider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <org.javando.android.sliderview.SliderView
             android:id="@+id/slider"
             android:layout_width="0dp"
