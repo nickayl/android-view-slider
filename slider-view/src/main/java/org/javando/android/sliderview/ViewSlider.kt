@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.SystemClock
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.View
@@ -21,12 +22,11 @@ class SliderView @JvmOverloads constructor(context: Context,
                                            defStyleRes: Int = 0) :
     FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
+    private val logger = Logger.instance
     private var scrollView: ScrollView? = null
-    private val defaultOnTouchDownAnim = AnimatorInflater.loadAnimator(context,
-                                                                       R.animator.scaleup_animator)
+    private val defaultOnTouchDownAnim = AnimatorInflater.loadAnimator(context, R.animator.scaleup_animator)
         .setDuration(100)
-    private val defaultOnTouchUpAnim = AnimatorInflater.loadAnimator(context,
-                                                                     R.animator.scaledown_animator)
+    private val defaultOnTouchUpAnim = AnimatorInflater.loadAnimator(context, R.animator.scaledown_animator)
         .setDuration(100)
 
     var onStartDragAnimation: Animator? = defaultOnTouchDownAnim
@@ -76,23 +76,20 @@ class SliderView @JvmOverloads constructor(context: Context,
     }
 
     private val listener = object : OnTouchListener {
-        //private var endX = 0f
         var startX = 0f
         var rawStartX = 0f
         var startY = 0f
         var dxsum: Float = 0f
-        var hasMoved = false
-        private var onCancelDispatched = false
+        private var hasMoved = false
 
-        // var isTouchOwner = true
+        private var onCancelDispatched = false
         var interruptedTouchView: View? = null
 
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             onStartDragAnimation?.setTarget(view)
             onEndDragAnimation?.setTarget(view)
-            //val centerView = view.width / 2
 
-            println("scroll ${event.action}")
+            logger.log("scroll ${event.action}")
 
             when (event.action) {
                 ACTION_DOWN -> {
@@ -102,28 +99,19 @@ class SliderView @JvmOverloads constructor(context: Context,
                     startX = event.x;
                     startY = event.y;
                     rawStartX = event.rawX
-                    //dispatchTouchEvent(view, event)
-                    //                    Log.d("TEST", "Touch DOWN XY:  (x,y) = (${event.x}, ${event.y})\n"+
-                    //                            "    Touch DOWN rawXY: (x,y) = (${event.rawX}, ${event.rawY})")
-                    return false
-
                 }
 
                 ACTION_UP -> {
                     val dx = event.rawX - rawStartX;
-                    //                    Log.d("TEST", "Touch UP XY:    (x,y) = (${event.x}, ${event.y}), DX = ($dxsum)\n" +
-                    //                            "    Touch UP rawXY: (x,y) = (${event.rawX}, ${event.rawY}), rawDX = ($dx)")
-
                     val abs = abs(dx)
                     val elapsedTimeFromDownToUp = SystemClock.uptimeMillis() - event.downTime
                     if (abs <= 2 && elapsedTimeFromDownToUp <= 225) {
                         onStartDragAnimation?.cancel()
-                        println("== Click detected ==")
+                        logger.log("Click detected")
                        // view.performClick()
                         val wrapper = views.find { it.view == view }!!
                         onItemClickListener?.invoke(view, wrapper.item, wrapper.position)
                         if (abs > 0) slide(-dxsum)
-                        //  return false
                     } else {
                         startOnTouchUpAnimation()
                         when {
@@ -133,46 +121,40 @@ class SliderView @JvmOverloads constructor(context: Context,
                         }
                     }
                     interruptedTouchView = null
-                    //   Log.d("TEST", "[LISTENER]Touch UP: (startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
-                    return false
+                    logger.log("Touch UP: (startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
                 }
 
                 ACTION_MOVE -> {
                     dispatchActionCancelEvent(view, event)
                     startOnTouchDownAnimation()
                     val dx = event.x - startX
-                    //val dy = event.y - startY
-                    children.forEach {
-                        it.translationX += dx
-                    }
+
+                    children.forEach { it.translationX += dx }
                     dxsum += dx
                     hasMoved = true
 
-                    //  Log.d("TEST", "[LISTENER]Touch MOVE: dy=$dy(startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
-                  //  view.onTouchEvent(event)
+                  //Log.d("TEST", "[LISTENER]Touch MOVE: dy=$dy(startX, dx, x,y) = ($startX, $dx, ${event.x}, ${event.y})")
                     return true
                 }
 
                 ACTION_CANCEL -> {
                     interruptedTouchView = view
-                    //dispatchTouchEvent(view, event)
-                    return false
                 }
             }
 
-            return true
+            return false
         }
 
         private fun dispatchActionCancelEvent(view: View, e: MotionEvent) {
             if(onCancelDispatched) return
-            println("Sending ACTION_CANCEL to $view...")
-            val cancelEvent = obtain(e.downTime, e.eventTime, ACTION_CANCEL, e.x, e.y, e.metaState)
+            logger.log("Sending ACTION_CANCEL to $view")
+            val cancelEvent = MotionEvent.obtain(e.downTime, e.eventTime, ACTION_CANCEL, e.x, e.y, e.metaState)
             view.onTouchEvent(cancelEvent)
             if(view is ViewGroup) {
                 view.children.forEach {
                     if (it.hasOnClickListeners()) {
                         it.onTouchEvent(cancelEvent)
-                        println("Sending ACTION_CANCEL to children $it...")
+                        logger.log("Sending ACTION_CANCEL to children $view")
                     }
                 }
             }
@@ -205,7 +187,7 @@ class SliderView @JvmOverloads constructor(context: Context,
 
     private fun slideRight(v: View, manualScrolledAmount: Float, animations: Boolean = true) {
         val view = views.find { v == it.view }!!
-        println("Slide RIGHT detected...")
+        logger.log("Slide RIGHT detected ")
         if (hasRight()) {
             val amount = layoutManager.getSlidingAmount(view.view, SlideDirection.RIGHT) * -1
             slide(amount - manualScrolledAmount, animations)
@@ -216,7 +198,7 @@ class SliderView @JvmOverloads constructor(context: Context,
 
     private fun slideLeft(v: View, manualScrolledAmount: Float, animations: Boolean = true) {
         val view = views.find { v == it.view }!!
-        println("Slide LEFT detected...")
+        logger.log("Slide LEFT detected")
         if (hasLeft()) {
             val amount = layoutManager.getSlidingAmount(view.view, SlideDirection.LEFT)
             slide(amount - manualScrolledAmount, animations)
@@ -267,7 +249,7 @@ class SliderView @JvmOverloads constructor(context: Context,
                                 val elapsedTimeFromDownToUp = SystemClock.uptimeMillis() - event.downTime
                                 if (abs <= 2 && elapsedTimeFromDownToUp <= 225) {
                                     onStartDragAnimation?.cancel()
-                                    println("== Click detected ==")
+                                    logger.log("== Click detected ==")
                                     val wrapper = views.find { it.view == view }!!
                                     onItemClickListener?.invoke(view,
                                                                 wrapper.item,
@@ -281,7 +263,7 @@ class SliderView @JvmOverloads constructor(context: Context,
                                         else -> slideLeft(view, dxsum)
                                     }
                                 }
-                                println("Touch UP=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
+                                logger.log("Touch UP=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
                                 startX = 0f
                                 dxsum = 0f
                                 rawStartX = 0f
@@ -290,7 +272,7 @@ class SliderView @JvmOverloads constructor(context: Context,
                             }
                             ACTION_MOVE -> {
                                 if (abs(listener.dxsum) <= 3) {
-                                    println("passing control to scrollview... ${listener.dxsum}")
+                                    logger.log("passing control to scrollview... ${listener.dxsum}")
                                     dxsum = listener.dxsum
                                     children.forEach { it.translationX += -listener.dxsum }
                                     listener.dxsum = 0f
@@ -310,12 +292,12 @@ class SliderView @JvmOverloads constructor(context: Context,
                                 children.forEach { it.translationX += dx; }
                             }
                         }
-                        println("Touch $what coming from ScrollView ${event.action} (x,y)=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
+                        logger.log("Touch $what coming from ScrollView ${event.action} (x,y)=(${event.x}, ${event.y} dxsum=$dxsum, startX=$startX.  $event)")
                         return true
                     }
 
                 })
-                println("Detected a parent ScrollView...")
+                logger.log("Detected a parent ScrollView")
                 scrollView = parent
             }
             parent = parent.parent
@@ -356,7 +338,7 @@ class SliderView @JvmOverloads constructor(context: Context,
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         layoutManager.checkConsistency()
         layoutManager.applyLayout()
-        println("On measure called")
+        logger.log("On measure called")
     }
 
     fun notifyDataSetChanged() {
@@ -456,12 +438,12 @@ class SliderView @JvmOverloads constructor(context: Context,
 //
 //        internal fun notifyRightSlide() {
 //            selectedItemPosition++
-//            println("==ADAPTER== Notified RIGHT slide occurred. Selected item index is now= $selectedItemPosition")
+//            logger.log("==ADAPTER== Notified RIGHT slide occurred. Selected item index is now= $selectedItemPosition")
 //        }
 //
 //        internal fun notifyLeftSlide() {
 //            selectedItemPosition--
-//            println("==ADAPTER== Notified LEFT slide occurred. Selected item index is now = $selectedItemPosition")
+//            logger.log("==ADAPTER== Notified LEFT slide occurred. Selected item index is now = $selectedItemPosition")
 //        }
 //
 //        fun nextElementForDirection(view: View, direction: SlideDirection): View? {
@@ -495,7 +477,7 @@ class SliderView @JvmOverloads constructor(context: Context,
 //            if (((event.rawX >= xy[0]) && (event.rawX <= xy[0] + it.width)) && (event.rawY >= xy[1] && (event.rawY <= xy[1] + it.height))) {
 //                //it.performClick()
 //                it.onTouchEvent(event)
-//                println("${it.javaClass.name} eventRawX=${event.rawX} eventRawY=${event.rawY} itX=${xy[0]} itY=${xy[1]}")
+//                logger.log("${it.javaClass.name} eventRawX=${event.rawX} eventRawY=${event.rawY} itX=${xy[0]} itY=${xy[1]}")
 //            }
 //        }
 //    }

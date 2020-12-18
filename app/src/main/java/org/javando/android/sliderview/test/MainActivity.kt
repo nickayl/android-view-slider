@@ -53,13 +53,13 @@ internal class MainActivity : AppCompatActivity() {
 
         viewSlider.selectedItemPosition = 0
 
-        val centeredItemLayoutManager = CenteredItemLayoutManager()
-        viewSlider.layoutManager = centeredItemLayoutManager
-        centeredItemLayoutManager.itemsOverflow = 50
+//        val centeredItemLayoutManager = CenteredItemLayoutManager()
+//        viewSlider.layoutManager = centeredItemLayoutManager
+//        centeredItemLayoutManager.itemsOverflow = 50
         //res = books
-//        val linearLayoutManager = LinearLayoutManager()
-//        linearLayoutManager.itemsLeftMargin = 70f
-//        viewSlider.layoutManager = linearLayoutManager
+        val linearLayoutManager = LinearLayoutManager()
+        linearLayoutManager.itemsLeftMargin = 70f
+        viewSlider.layoutManager = linearLayoutManager
 
         //viewSlider.layoutManager.minimumScrollPercentage = 0.20f
 
