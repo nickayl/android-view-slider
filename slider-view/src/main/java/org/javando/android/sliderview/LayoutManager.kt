@@ -17,14 +17,14 @@ class LeftBoundLayoutManager : SliderView.LayoutManager()  {
             this
         }
 
-        sliderView.getRightItems().forEachIndexed { index, view ->
+        sliderView.getRightItems().forEachIndexed { _, view ->
             view.x = previous.x + previous.measuredWidth + (sliderView.measuredWidth - previous.measuredWidth - leftBoundMargin) - itemsOverflow
             previous = view
         }
 
         previous = sliderView.selectedItem
 
-        sliderView.getLeftItems().reversed().forEachIndexed { index, view ->
+        sliderView.getLeftItems().reversed().forEachIndexed { _, view ->
             view.x = previous.x - (previous.measuredWidth + (sliderView.measuredWidth - previous.measuredWidth - leftBoundMargin) - itemsOverflow)
             previous = view
         }

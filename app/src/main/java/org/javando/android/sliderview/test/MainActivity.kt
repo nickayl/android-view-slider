@@ -51,15 +51,15 @@ internal class MainActivity : AppCompatActivity() {
 
         val viewSlider = findViewById<SliderView>(R.id.slider)
 
-        viewSlider.selectedItemPosition = 0
+        viewSlider.selectedItemPosition = 3
 
-//        val centeredItemLayoutManager = CenteredItemLayoutManager()
-//        viewSlider.layoutManager = centeredItemLayoutManager
-//        centeredItemLayoutManager.itemsOverflow = 50
-        //res = books
-        val linearLayoutManager = LinearLayoutManager()
-        linearLayoutManager.itemsLeftMargin = 70f
-        viewSlider.layoutManager = linearLayoutManager
+        val centeredItemLayoutManager = CenteredItemLayoutManager()
+        viewSlider.layoutManager = centeredItemLayoutManager
+        centeredItemLayoutManager.itemsOverflow = 50
+        res = books
+//        val linearLayoutManager = LinearLayoutManager()
+//        linearLayoutManager.itemsLeftMargin = 70f
+//        viewSlider.layoutManager = linearLayoutManager
 
         //viewSlider.layoutManager.minimumScrollPercentage = 0.20f
 
