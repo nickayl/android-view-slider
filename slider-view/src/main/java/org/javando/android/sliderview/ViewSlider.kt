@@ -142,7 +142,9 @@ class SliderView @JvmOverloads constructor(context: Context,
                     unsignedDxsum += abs(dx)
                   //  hasMoved = true
 
-                  Log.d("TEST", "[LISTENER]Touch MOVE: dy=$dy, eventY=${event.y} startY=$startY (startX, dx, udx, x,y) = ($startX, $dx, $unsignedDxsum, ${event.x}, ${event.y})")
+                    logger.commit {
+                        log("[LISTENER]Touch MOVE: dy=$dy, eventY=${event.y} startY=$startY (startX, dx, udx, x,y) = ($startX, $dx, $unsignedDxsum, ${event.x}, ${event.y})")
+                    }
                     return true
                 }
 

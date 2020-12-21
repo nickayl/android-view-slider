@@ -14,6 +14,10 @@ sealed class Logger(defaultTag: String? = null) {
     protected val defaultTag: String = defaultTag ?: "[SliderView-DEBUG]"
 
     abstract fun log(string: String, tag: String = defaultTag)
+    inline fun commit(block: Logger.() -> Unit) {
+        if(this is LoggerDebug)
+            block.invoke(this)
+    }
 
     object LoggerDebug : Logger() {
         override fun log(string: String, tag: String) {
